@@ -1,0 +1,40 @@
+{
+  "name": "services",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./edge": {
+      "import": "./dist/auth-edge.js",
+      "types": "./dist/auth-edge.d.ts"
+    }
+  },
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts --fix"
+  },
+  "dependencies": {
+    "ts-rest": "workspace:*",
+    "inversify": "^6.0.3",
+    "jose": "^5.9.6",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^22",
+    "eslint": "^8.56.0",
+    "eslint-config": "workspace:*"
+  }
+}
