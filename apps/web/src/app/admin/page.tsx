@@ -110,48 +110,36 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Document</CardTitle>
-                <CardDescription>Drag and drop or click to upload files</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FileUpload onUploadSuccess={handleUploadSuccess} />
-              </CardContent>
-            </Card>
-          </div>
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
+        <Space size={6}>
+          <FileUpload onUploadSuccess={handleUploadSuccess} />
 
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Documents</CardTitle>
-                <CardDescription>Manage your uploaded documents</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {documentsError ? (
-                  <Alert variant="destructive">
-                    <AlertTitle>Error Loading Documents</AlertTitle>
-                    <AlertDescription>
-                      {getErrorMessage(
-                        documentsError,
-                        'Failed to load documents. Please try refreshing the page.',
-                      )}
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <DocumentTable
-                    documents={documents}
-                    isLoading={isLoadingDocs}
-                    onDeleteSuccess={handleDeleteSuccess}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents</CardTitle>
+              <CardDescription>Manage your uploaded documents</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {documentsError ? (
+                <Alert variant="destructive">
+                  <AlertTitle>Error Loading Documents</AlertTitle>
+                  <AlertDescription>
+                    {getErrorMessage(
+                      documentsError,
+                      'Failed to load documents. Please try refreshing the page.',
+                    )}
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <DocumentTable
+                  documents={documents}
+                  isLoading={isLoadingDocs}
+                  onDeleteSuccess={handleDeleteSuccess}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </Space>
       </main>
     </div>
   );

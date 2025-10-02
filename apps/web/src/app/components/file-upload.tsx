@@ -1,11 +1,19 @@
 'use client';
 
-import { Upload } from 'lucide-react';
+import { ChevronDown, ChevronUp, Upload } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import { useUploadDocument } from '@/api/documents';
-import { Space } from '@/components/space';
+import { Box } from '@/components/box';
+import { Button } from '@/components/common/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/common/card';
 import { FileUploadState, UploadStatus } from '@/components/upload-status';
 import { getErrorMessage } from '@/utils';
 
@@ -17,6 +25,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const MAX_PARALLEL_UPLOADS = 10;
 
 export function FileUpload({ onUploadSuccess }: FileUploadProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
   const [uploadStates, setUploadStates] = useState<FileUploadState[]>([]);
   const uploadMutation = useUploadDocument();
 
@@ -196,33 +205,57 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
 
   return (
     <>
-      <Space size={4}>
-        <div
-          {...getRootProps()}
-          className={`
-            border-2 border-dashed border-foreground p-8 text-center cursor-pointer
-            transition-all hover:border-primary hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-            ${isDragActive ? 'bg-primary/10 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : ''}
-          `}
-        >
-          <input {...getInputProps()} />
-          <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          {isDragActive ? (
-            <p className="text-primary font-medium">Drop the files here...</p>
-          ) : (
-            <div>
-              <p className="font-medium mb-2">Drag & drop files here, or click to select</p>
-              <p className="text-sm text-muted-foreground">
-                Supports PDF, DOCX, XLSX, PPTX, TXT, CSV, JSON, HTML, XML, ZIP
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">Max 50MB per file</p>
-              <p className="text-sm text-muted-foreground">
-                All files will be uploaded (10 in parallel)
-              </p>
-            </div>
-          )}
+      <Card>
+        <div className="cursor-pointer select-none" onClick={() => setIsExpanded(!isExpanded)}>
+          <CardHeader className={isExpanded ? 'pb-4' : 'py-5'}>
+            <Box align="center" justify="between">
+              <Box align="center" gap={3}>
+                <Upload className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <CardTitle className="text-lg">File Upload</CardTitle>
+                  {!isExpanded && (
+                    <CardDescription className="text-sm mt-0.5">
+                      Drag and drop to upload • PDF, DOCX, XLSX, TXT, CSV, JSON, HTML, XML, ZIP
+                    </CardDescription>
+                  )}
+                </div>
+              </Box>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                {isExpanded ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+            </Box>
+          </CardHeader>
         </div>
-      </Space>
+        {isExpanded && (
+          <CardContent>
+            <div
+              {...getRootProps()}
+              className={`
+                border-2 border-dashed border-foreground p-6 text-center cursor-pointer
+                transition-all hover:border-primary hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                ${isDragActive ? 'bg-primary/10 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : ''}
+              `}
+            >
+              <input {...getInputProps()} />
+              <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+              {isDragActive ? (
+                <p className="text-primary font-medium">Drop the files here...</p>
+              ) : (
+                <div>
+                  <p className="font-medium mb-1">Drag & drop files here, or click to select</p>
+                  <p className="text-xs text-muted-foreground">
+                    PDF, DOCX, XLSX, PPTX, TXT, CSV, JSON, HTML, XML, ZIP • Max 50MB • No images
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        )}
+      </Card>
 
       <UploadStatus uploadStates={uploadStates} onRetry={retryUpload} onClear={clearCompleted} />
     </>

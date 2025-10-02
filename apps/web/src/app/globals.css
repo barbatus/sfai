@@ -57,4 +57,25 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Custom scrollbar styles */
+  .overflow-x-auto::-webkit-scrollbar,
+  .overflow-y-auto::-webkit-scrollbar {
+    @apply h-3 w-3;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-track,
+  .overflow-y-auto::-webkit-scrollbar-track {
+    @apply bg-secondary border-2 border-foreground;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb,
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    @apply bg-foreground border-2 border-foreground;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover,
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
 }

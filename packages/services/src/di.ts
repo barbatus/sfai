@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import { Container } from "inversify";
+import { Container, type interfaces } from "inversify";
 
 import { AuthService } from "./auth.service";
 import { type AppConfig, appConfigSymbol, getAppConfigStatic } from "./config";
@@ -21,7 +21,7 @@ container
   .inSingletonScope();
 container.bind<DocumentsService>(DocumentsService).toSelf().inSingletonScope();
 
-export function resolve<T>(service: new (...args: unknown[]) => T): T {
+export function resolve<T>(service: interfaces.ServiceIdentifier<T>): T {
   return container.get<T>(service);
 }
 

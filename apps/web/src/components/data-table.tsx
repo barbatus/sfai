@@ -102,9 +102,9 @@ export function DataTable<TData, TValue>({
   return (
     <div className={className}>
       <div
-        className={`border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${tableClassName}`}
+        className={`border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-x-auto ${tableClassName}`}
       >
-        <table className="w-full">
+        <table className="w-full table-fixed min-w-[600px]">
           <thead className="border-b-2 border-foreground bg-secondary">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -191,7 +191,7 @@ export function DataTablePagination<TData>({
           )}
         </div>
       )}
-      <Box gap={2}>
+      <Box gap={2} align="center">
         <Button
           variant="outline"
           size="sm"
