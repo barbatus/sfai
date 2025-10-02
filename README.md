@@ -7,7 +7,7 @@ A professional document management admin panel with RAG API integration, built w
 - 🔐 **Secure Authentication** - JWT-based admin authentication
 - 📄 **Document Management** - Upload, view, and delete documents
 - 🎯 **Drag & Drop Upload** - Support for multiple file formats with progress tracking
-- 🎨 **Neo-Brutalist Design** - Modern UI with shadcn/ui components
+- 🎨 **Dual Theme Support** - Switch between Neo-Brutalist and Classic Blue themes
 - ⚡ **Real-time Updates** - Live progress tracking for file uploads
 - 🏗️ **Monorepo Structure** - Organized with pnpm workspaces and Turbo
 
@@ -15,7 +15,7 @@ A professional document management admin panel with RAG API integration, built w
 
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS with neo-brutalism theme
+- **Styling**: Tailwind CSS with dual theme support
 - **UI Components**: shadcn/ui
 - **State Management**: React Query (TanStack Query)
 - **API Client**: ts-rest
@@ -145,6 +145,15 @@ sfai/
 - ZIP Archives (.zip)
 
 **Maximum file size**: 50MB per document
+
+## UI Themes
+
+The application supports two distinct visual themes that can be switched on-the-fly:
+
+- **Neo-Brutalist** (Default) - Bold, high-contrast design with sharp edges and strong shadows
+- **Classic Blue** - Clean, professional appearance with subtle shadows and rounded corners
+
+To switch themes, use the theme switcher button (🎨) in the admin panel header. The selected theme is automatically saved to your browser's local storage.
 
 ## Authentication
 

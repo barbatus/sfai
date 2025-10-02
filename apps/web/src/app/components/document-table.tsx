@@ -2,6 +2,8 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import {
+  ArrowDown,
+  ArrowUp,
   ArrowUpDown,
   File,
   FileCode,
@@ -138,6 +140,9 @@ export function DocumentTable({ documents, isLoading, onDeleteSuccess }: Documen
     {
       accessorKey: 'filename',
       header: ({ column }) => {
+        const isSorted = column.getIsSorted();
+        const Icon = isSorted === 'asc' ? ArrowUp : isSorted === 'desc' ? ArrowDown : ArrowUpDown;
+
         return (
           <Button
             variant="ghost"
@@ -145,7 +150,7 @@ export function DocumentTable({ documents, isLoading, onDeleteSuccess }: Documen
             className="hover:bg-transparent p-0 font-semibold"
           >
             Filename
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            <Icon className="ml-2 h-4 w-4" />
           </Button>
         );
       },

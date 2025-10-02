@@ -18,6 +18,7 @@ import {
 } from '@/components/common/card';
 import { toast } from '@/components/common/toaster';
 import { Space } from '@/components/space';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 import { getErrorMessage } from '@/lib/error';
 
 import { DocumentTable } from '../components/document-table';
@@ -91,17 +92,20 @@ export default function AdminPage() {
           <Box align="center" justify="between">
             <Box align="center" gap={2}>
               <FileText className="h-6 w-6" />
-              <h1 className="text-xl font-bold">SFAI Admin Panel</h1>
+              <h1 className="text-xl font-bold">Document Management</h1>
             </Box>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              disabled={logoutMutation.isPending}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <Box align="center" gap={2}>
+              <ThemeSwitcher />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </Box>
           </Box>
         </div>
       </header>
