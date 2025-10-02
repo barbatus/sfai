@@ -49,7 +49,13 @@ const handler = createNextHandler(
 
     logout: async () => {
       const cookieStore = await cookies();
-      cookieStore.delete('auth-token');
+      cookieStore.set('auth-token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 0, // Expire immediately
+      });
 
       return {
         status: 200,

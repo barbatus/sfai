@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { FileText, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
@@ -26,6 +27,7 @@ import { FileUpload } from '../components/file-upload';
 
 export default function AdminPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: authData, isLoading: isAuthLoading, error: authError } = useAuth();
   const {
     data: documents = [],
@@ -46,7 +48,8 @@ export default function AdminPage() {
     logoutMutation.mutate(
       { body: {} },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          queryClient.clear();
           router.push('/login');
         },
         onError: (error) => {
@@ -58,7 +61,7 @@ export default function AdminPage() {
         },
       },
     );
-  }, [logoutMutation, router]);
+  }, [logoutMutation, router, queryClient]);
 
   const handleUploadSuccess = useCallback(
     (filename: string) => {

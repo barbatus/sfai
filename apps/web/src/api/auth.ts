@@ -12,6 +12,9 @@ export const useAuth = () => {
   return authApi.me.useQuery({
     queryKey: ['auth', 'me'],
     select: (d) => d.body,
+    retry: false,
+    staleTime: 0,
+    gcTime: 0,
   });
 };
 
