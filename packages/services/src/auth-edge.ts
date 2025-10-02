@@ -2,11 +2,12 @@ import { jwtVerify } from "jose";
 
 import { UnauthorizedError } from "./utils/exceptions";
 
-// Edge runtime compatible version of verifyToken (no DI dependencies)
 export async function verifyToken(
   token: string,
 ): Promise<{ email: string; isAdmin: boolean }> {
+  // In Edge Runtime, we access process.env directly without validation
   const jwtSecret = process.env.JWT_SECRET;
+
   if (!jwtSecret) {
     throw new UnauthorizedError("JWT_SECRET not configured");
   }

@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/common/input';
 import { Label } from '@/components/common/label';
 import { toast } from '@/components/common/toaster';
+import { getErrorMessage } from '@/utils';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,18 +42,17 @@ export default function LoginPage() {
             });
             router.push('/admin');
           } else {
-            const errorBody = response.body as { message?: string };
             toast({
               title: 'Error',
-              description: errorBody.message || 'Invalid credentials',
+              description: getErrorMessage(response.body, 'Invalid credentials'),
               variant: 'destructive',
             });
           }
         },
-        onError: () => {
+        onError: (error) => {
           toast({
             title: 'Error',
-            description: 'An error occurred during login',
+            description: getErrorMessage(error, 'An error occurred during login'),
             variant: 'destructive',
           });
         },

@@ -18,6 +18,7 @@ import {
 } from '@/components/common/card';
 import { toast } from '@/components/common/toaster';
 import { Space } from '@/components/space';
+import { getErrorMessage } from '@/utils';
 
 import { DocumentTable } from '../components/document-table';
 import { FileUpload } from '../components/file-upload';
@@ -47,10 +48,10 @@ export default function AdminPage() {
         onSuccess: () => {
           router.push('/');
         },
-        onError: () => {
+        onError: (error) => {
           toast({
             title: 'Error',
-            description: 'Failed to logout',
+            description: getErrorMessage(error, 'Failed to logout'),
             variant: 'destructive',
           });
         },
@@ -130,9 +131,10 @@ export default function AdminPage() {
                   <Alert variant="destructive">
                     <AlertTitle>Error Loading Documents</AlertTitle>
                     <AlertDescription>
-                      {documentsError instanceof Error
-                        ? documentsError.message
-                        : 'Failed to load documents. Please try refreshing the page.'}
+                      {getErrorMessage(
+                        documentsError,
+                        'Failed to load documents. Please try refreshing the page.',
+                      )}
                     </AlertDescription>
                   </Alert>
                 ) : (

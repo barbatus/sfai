@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/pop
 import { Progress } from '@/components/common/progress';
 import { ScrollArea } from '@/components/common/scroll-area';
 import { Space } from '@/components/space';
+import { getErrorMessage } from '@/utils';
 
 interface FileUploadState {
   id: string;
@@ -116,7 +117,7 @@ export function FileUpload({ onUploadSuccess }: { onUploadSuccess: (filename: st
                   ? {
                       ...state,
                       status: 'error' as const,
-                      error: error instanceof Error ? error.message : 'Upload failed',
+                      error: getErrorMessage(error, 'Upload failed'),
                     }
                   : state,
               ),

@@ -11,20 +11,9 @@ export class SupabaseAuthService {
   private refreshTimer: NodeJS.Timeout | null = null;
 
   constructor(@inject(appConfigSymbol) private config: AppConfig) {
-    const supabaseUrl = this.config.supabaseUrl;
-    const supabaseAnonKey = this.config.supabaseAnonKey;
+    const { url, anonKey } = this.config.supabase;
 
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error(
-        "Missing Supabase configuration. Please set " +
-          "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.",
-      );
-    }
-
-    this.supabase = createClient(
-      supabaseUrl,
-      supabaseAnonKey,
-    ) as SupabaseClient;
+    this.supabase = createClient(url, anonKey) as SupabaseClient;
     this.setupAuthListener();
   }
 
@@ -46,9 +35,9 @@ export class SupabaseAuthService {
     if (!this.session?.expires_at) return;
 
     // Refresh 5 minutes before expiry
-    const expiresAt = this.session.expires_at * 1000;
+    const expiresAt = this.session.expires_at * 1000; // Convert to milliseconds
     const now = Date.now();
-    const refreshIn = expiresAt - now - 5 * 60 * 1000;
+    const refreshIn = expiresAt - now - 5 * 60 * 1000; // 5 minutes before expiry
 
     if (refreshIn > 0) {
       this.refreshTimer = setTimeout(() => {
@@ -65,6 +54,7 @@ export class SupabaseAuthService {
   }
 
   async initialize(): Promise<void> {
+    // Try to restore existing session
     const {
       data: { session },
     } = await this.supabase.auth.getSession();
@@ -73,24 +63,17 @@ export class SupabaseAuthService {
       this.session = session;
       this.scheduleTokenRefresh();
     } else {
+      // Sign in with service account
       await this.signIn();
     }
   }
 
   async signIn(): Promise<void> {
-    const email = this.config.supabaseServiceEmail;
-    const password = this.config.supabaseServicePassword;
-
-    if (!email || !password) {
-      throw new Error(
-        "Missing Supabase service account credentials. Please set " +
-          "SUPABASE_SERVICE_EMAIL and SUPABASE_SERVICE_PASSWORD environment variables.",
-      );
-    }
+    const { serviceEmail, servicePassword } = this.config.supabase;
 
     const { data, error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: serviceEmail,
+      password: servicePassword,
     });
 
     if (error) {
@@ -145,6 +128,7 @@ export class SupabaseAuthService {
     this.session = null;
   }
 
+  // Clean up on service destruction
   destroy(): void {
     this.clearRefreshTimer();
   }
