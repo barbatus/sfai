@@ -1,11 +1,13 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { useLogin } from '@/api/auth';
+import { Alert, AlertDescription } from '@/components/common/alert';
 import { Button } from '@/components/common/button';
 import {
   Card,
@@ -17,44 +19,34 @@ import {
 } from '@/components/common/card';
 import { Input } from '@/components/common/input';
 import { Label } from '@/components/common/label';
-import { toast } from '@/components/common/toaster';
 import { getErrorMessage } from '@/lib/error';
 
 export default function LoginPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const loginMutation = useLogin();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
 
     loginMutation.mutate(
       { body: formData },
       {
-        onSuccess: (response) => {
+        onSuccess: async (response) => {
           if (response.status === 200) {
-            toast({
-              title: 'Success',
-              description: 'Logged in successfully',
-            });
             router.push('/admin');
           } else {
-            toast({
-              title: 'Error',
-              description: getErrorMessage(response.body, 'Invalid credentials'),
-              variant: 'destructive',
-            });
+            setErrorMessage(getErrorMessage(response.body, 'Invalid credentials'));
           }
         },
         onError: (error) => {
-          toast({
-            title: 'Error',
-            description: getErrorMessage(error, 'An error occurred during login'),
-            variant: 'destructive',
-          });
+          setErrorMessage(getErrorMessage(error, 'An error occurred during login'));
         },
       },
     );
@@ -78,6 +70,11 @@ export default function LoginPage() {
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {errorMessage && (
+                <Alert variant="destructive">
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

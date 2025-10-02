@@ -47,10 +47,6 @@ export default function AdminPage() {
       {
         onSuccess: () => {
           router.push('/login');
-          toast({
-            title: 'Success',
-            description: 'Logged out successfully',
-          });
         },
         onError: (error) => {
           toast({
