@@ -69,12 +69,12 @@ export class DocumentsService {
   }
 
   async uploadDocument(file: FileUpload | File): Promise<UploadResponse> {
-    const config = this.configService.getConfig();
-    const authHeader = await this.getAuthHeader();
-
     if (file.size > 50 * 1024 * 1024) {
       throw new FileTooLargeError("File exceeds 50MB limit");
     }
+
+    const config = this.configService.getConfig();
+    const authHeader = await this.getAuthHeader();
 
     // FormData handling for server-side - in production use proper multipart handler
     const FormDataClass =
@@ -127,7 +127,6 @@ export class DocumentsService {
       ) {
         throw error;
       }
-      console.error("Error uploading document:", error);
       throw new InternalServerError("Failed to upload document");
     }
   }
@@ -169,7 +168,6 @@ export class DocumentsService {
       ) {
         throw error;
       }
-      console.error("Error deleting document:", error);
       throw new InternalServerError("Failed to delete document");
     }
   }

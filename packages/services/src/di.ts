@@ -21,9 +21,7 @@ container
   .inSingletonScope();
 container.bind<DocumentsService>(DocumentsService).toSelf().inSingletonScope();
 
-// Use a more flexible type for the resolve function
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function resolve<T>(service: new (...args: any[]) => T): T {
+export function resolve<T>(service: new (...args: unknown[]) => T): T {
   return container.get<T>(service);
 }
 

@@ -6,9 +6,8 @@ import { useDropzone } from 'react-dropzone';
 
 import { useUploadDocument } from '@/api/documents';
 import { Space } from '@/components/space';
-import { getErrorMessage } from '@/utils';
-
 import { FileUploadState, UploadStatus } from '@/components/upload-status';
+import { getErrorMessage } from '@/utils';
 
 interface FileUploadProps {
   onUploadSuccess?: (filename: string) => void;

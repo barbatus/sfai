@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "turbo watch dev --filter=web",
     "lint": "turbo lint",
     "lint:fix": "turbo lint -- --fix",
     "type-check": "turbo type-check",
     "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {
-    "turbo": "^2.3.3"
+    "turbo": "^2.3.3",
+    "wait-on": "^8.0.5"
   },
   "packageManager": "pnpm@9.14.2",
   "engines": {
