@@ -19,8 +19,8 @@ import {
 import { toast } from '@/components/common/toaster';
 import { Space } from '@/components/space';
 
-import { DocumentTable } from './document-table';
-import { FileUpload } from './file-upload';
+import { DocumentTable } from '../components/document-table';
+import { FileUpload } from '../components/file-upload';
 
 export default function AdminPage() {
   const router = useRouter();

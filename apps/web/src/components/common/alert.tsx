@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { AlertCircle, CheckCircle, Info, XCircle } from 'lucide-react';
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/tw';
 
 const alertVariants = cva(
   'relative w-full p-4 border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] [&>svg~*]:pl-7 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4',
