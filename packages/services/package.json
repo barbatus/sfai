@@ -25,16 +25,17 @@
     "lint": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "ts-rest": "workspace:*",
+    "@supabase/supabase-js": "^2.58.0",
     "inversify": "^6.0.3",
     "jose": "^5.9.6",
     "reflect-metadata": "^0.2.2",
+    "ts-rest": "workspace:*",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^22",
     "eslint": "^8.56.0",
-    "eslint-config": "workspace:*"
+    "eslint-config": "workspace:*",
+    "typescript": "^5"
   }
 }

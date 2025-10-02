@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 import { type AppConfig, appConfigSymbol, getAppConfigStatic } from "./config";
 import { ConfigService } from "./config";
 import { DocumentsService } from "./documents.service";
+import { SupabaseAuthService } from "./supabase-auth.service";
 
 export const container = new Container();
 
@@ -14,6 +15,10 @@ container
   .toConstantValue(getAppConfigStatic());
 container.bind<ConfigService>(ConfigService).toSelf().inSingletonScope();
 container.bind<AuthService>(AuthService).toSelf().inSingletonScope();
+container
+  .bind<SupabaseAuthService>(SupabaseAuthService)
+  .toSelf()
+  .inSingletonScope();
 container.bind<DocumentsService>(DocumentsService).toSelf().inSingletonScope();
 
 // Use a more flexible type for the resolve function

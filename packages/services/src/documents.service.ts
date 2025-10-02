@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import type { DeleteResponse, Document, UploadResponse } from "ts-rest";
 
 import { ConfigService } from "./config";
+import { SupabaseAuthService } from "./supabase-auth.service";
 import {
   BadRequestError,
   FileTooLargeError,
@@ -17,15 +18,35 @@ interface FileUpload {
 
 @injectable()
 export class DocumentsService {
-  constructor(@inject(ConfigService) private configService: ConfigService) {}
+  constructor(
+    @inject(ConfigService) private configService: ConfigService,
+    @inject(SupabaseAuthService)
+    private supabaseAuthService: SupabaseAuthService,
+  ) {
+    void this.initializeSupabase();
+  }
+
+  private async initializeSupabase(): Promise<void> {
+    await this.supabaseAuthService.initialize();
+  }
+
+  private async getAuthHeader(): Promise<string> {
+    try {
+      const token = await this.supabaseAuthService.getAccessToken();
+      return `Bearer ${token}`;
+    } catch (error) {
+      throw new UnauthorizedError("Failed to get authentication token");
+    }
+  }
 
   async listDocuments(): Promise<string[]> {
     const config = this.configService.getConfig();
+    const authHeader = await this.getAuthHeader();
 
     try {
       const response = await fetch(`${config.ragApiUrl}/automotive/documents`, {
         headers: {
-          Authorization: `Bearer ${config.ragApiToken}`,
+          Authorization: authHeader,
         },
       });
 
@@ -49,6 +70,7 @@ export class DocumentsService {
 
   async uploadDocument(file: FileUpload | File): Promise<UploadResponse> {
     const config = this.configService.getConfig();
+    const authHeader = await this.getAuthHeader();
 
     if (file.size > 50 * 1024 * 1024) {
       throw new FileTooLargeError("File exceeds 50MB limit");
@@ -75,7 +97,7 @@ export class DocumentsService {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${config.ragApiToken}`,
+            Authorization: authHeader,
           },
           body: formData,
         },
@@ -112,6 +134,7 @@ export class DocumentsService {
 
   async deleteDocument(document: Document): Promise<DeleteResponse> {
     const config = this.configService.getConfig();
+    const authHeader = await this.getAuthHeader();
 
     try {
       const response = await fetch(
@@ -119,7 +142,7 @@ export class DocumentsService {
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${config.ragApiToken}`,
+            Authorization: authHeader,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(document),

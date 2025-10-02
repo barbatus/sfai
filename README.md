@@ -49,7 +49,6 @@ JWT_SECRET=sfai-admin-secret-key-2024
 
 # RAG API
 RAG_API_URL=https://classic-gas-rag-810898639913.us-central1.run.app
-RAG_API_TOKEN=your_api_token_here
 ```
 
 ### Development
@@ -148,7 +147,6 @@ The application is ready to be deployed to Vercel:
    - `ADMIN_PASSWORD`
    - `JWT_SECRET`
    - `RAG_API_URL`
-   - `RAG_API_TOKEN`
 4. Deploy
 
 ## License

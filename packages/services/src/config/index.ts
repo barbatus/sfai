@@ -5,8 +5,11 @@ export interface AppConfig {
   adminPassword: string;
   jwtSecret: string;
   ragApiUrl: string;
-  ragApiToken: string;
   nodeEnv: string;
+  supabaseUrl: string;
+  supabaseAnonKey: string;
+  supabaseServiceEmail: string;
+  supabaseServicePassword: string;
 }
 
 export const appConfigSymbol = Symbol.for("AppConfig");
@@ -23,8 +26,11 @@ export class ConfigService {
       ragApiUrl:
         process.env.RAG_API_URL ??
         "https://classic-gas-rag-810898639913.us-central1.run.app",
-      ragApiToken: process.env.RAG_API_TOKEN ?? "",
       nodeEnv: process.env.NODE_ENV ?? "development",
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+      supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+      supabaseServiceEmail: process.env.SUPABASE_SERVICE_EMAIL ?? "",
+      supabaseServicePassword: process.env.SUPABASE_SERVICE_PASSWORD ?? "",
     };
   }
 
@@ -41,7 +47,10 @@ export function getAppConfigStatic(): AppConfig {
     ragApiUrl:
       process.env.RAG_API_URL ??
       "https://classic-gas-rag-810898639913.us-central1.run.app",
-    ragApiToken: process.env.RAG_API_TOKEN ?? "",
     nodeEnv: process.env.NODE_ENV ?? "development",
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    supabaseServiceEmail: process.env.SUPABASE_SERVICE_EMAIL ?? "",
+    supabaseServicePassword: process.env.SUPABASE_SERVICE_PASSWORD ?? "",
   };
 }
