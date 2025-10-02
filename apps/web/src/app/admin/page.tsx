@@ -18,7 +18,7 @@ import {
 } from '@/components/common/card';
 import { toast } from '@/components/common/toaster';
 import { Space } from '@/components/space';
-import { getErrorMessage } from '@/utils';
+import { getErrorMessage } from '@/lib/error';
 
 import { DocumentTable } from '../components/document-table';
 import { FileUpload } from '../components/file-upload';

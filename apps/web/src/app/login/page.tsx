@@ -18,7 +18,7 @@ import {
 import { Input } from '@/components/common/input';
 import { Label } from '@/components/common/label';
 import { toast } from '@/components/common/toaster';
-import { getErrorMessage } from '@/utils';
+import { getErrorMessage } from '@/lib/error';
 
 export default function LoginPage() {
   const router = useRouter();

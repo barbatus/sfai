@@ -42,13 +42,22 @@ pnpm install
 Create a `.env.local` file in `apps/web/` with the following variables:
 
 ```env
-# Authentication
+# Admin Authentication
 ADMIN_EMAIL=admin@sfai.com
 ADMIN_PASSWORD=SecureAdminPass123!
 JWT_SECRET=sfai-admin-secret-key-2024
 
 # RAG API
 RAG_API_URL=https://classic-gas-rag-810898639913.us-central1.run.app
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_EMAIL=service@example.com
+SUPABASE_SERVICE_PASSWORD=service-password
+
+# Development Options
+USE_MOCK_UPLOAD=true  # Set to true to use local mock upload service
 ```
 
 ### Development
@@ -77,28 +86,50 @@ sfai/
 ├── apps/
 │   └── web/                    # Next.js application
 │       ├── src/
-│       │   ├── app/            # App router pages
-│       │   ├── components/     # React components
+│       │   ├── app/            # App router pages and API routes
+│       │   │   ├── admin/      # Admin panel page
+│       │   │   ├── api/        # Next.js API routes
+│       │   │   │   └── v1/     # API v1 endpoints
+│       │   │   ├── components/ # Page-specific components
+│       │   │   ├── login/      # Login page
+│       │   │   └── page.tsx    # Homepage
+│       │   ├── api/            # Client-side API hooks (ts-rest + React Query)
+│       │   ├── components/     # Shared React components
 │       │   │   ├── common/     # shadcn/ui components
-│       │   │   └── ...         # Feature components
-│       │   ├── api/            # API client setup
-│       │   └── lib/            # Utilities and auth
-│       └── ...
+│       │   │   ├── box.tsx     # Layout utility component
+│       │   │   ├── space.tsx   # Spacing utility component
+│       │   │   └── data-table.tsx  # Reusable data table
+│       │   ├── lib/            # Utilities
+│       │   └── utils/          # Helper functions
+│       ├── public/             # Static assets
+│       └── package.json        # Next.js dependencies
 ├── packages/
-│   ├── services/               # API contracts (ts-rest)
+│   ├── services/               # Backend services with DI
+│   │   ├── auth.service.ts    # Authentication service
+│   │   ├── documents.service.ts # Document management
+│   │   ├── supabase-auth.service.ts # Supabase integration
+│   │   ├── config/             # Configuration management
+│   │   ├── di.ts               # Dependency injection setup
+│   │   └── utils/exceptions.ts # Custom exception classes
+│   ├── ts-rest/                # API contracts
+│   │   ├── auth.contract.ts    # Auth endpoints
+│   │   └── documents.contract.ts # Document endpoints
 │   └── eslint-config/          # Shared ESLint configuration
+├── scripts/
+│   └── deploy-vercel.sh        # Deployment script
 ├── turbo.json                  # Turbo configuration
-└── pnpm-workspace.yaml         # pnpm workspace configuration
+├── pnpm-workspace.yaml         # pnpm workspace configuration
+└── pnpm-lock.yaml              # Lockfile for dependencies
 ```
 
 ## Available Scripts
 
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
-- `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Run ESLint with auto-fix
 - `pnpm type-check` - Run TypeScript type checking
-- `pnpm clean` - Clean build artifacts
+- `pnpm clean` - Clean build artifacts and node_modules
 
 ## Supported File Formats
 
@@ -129,16 +160,16 @@ The application integrates with a RAG (Retrieval-Augmented Generation) API for d
 
 ### API Endpoints
 
-- `GET /api/auth/me` - Get current user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/documents` - List all documents
-- `POST /api/documents/upload` - Upload a document
-- `DELETE /api/documents` - Delete a document
+- `GET /api/v1/auth/me` - Get current user
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/logout` - User logout
+- `GET /api/v1/documents/list` - List all documents
+- `POST /api/v1/documents/upload` - Upload a document (multipart/form-data)
+- `DELETE /api/v1/documents/delete` - Delete a document
 
 ## Deployment
 
-The application is ready to be deployed to Vercel:
+The application is configured for deployment to Vercel as a monorepo:
 
 1. Push your code to a Git repository
 2. Import the project to Vercel
@@ -147,6 +178,11 @@ The application is ready to be deployed to Vercel:
    - `ADMIN_PASSWORD`
    - `JWT_SECRET`
    - `RAG_API_URL`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_EMAIL`
+   - `SUPABASE_SERVICE_PASSWORD`
+   - `USE_MOCK_UPLOAD` (optional, for development)
 4. Deploy
 
 ## License

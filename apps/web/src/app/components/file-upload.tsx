@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from '@/components/common/card';
 import { FileUploadState, UploadStatus } from '@/components/upload-status';
-import { getErrorMessage } from '@/utils';
+import { getErrorMessage } from '@/lib/error';
 
 interface FileUploadProps {
   onUploadSuccess?: (filename: string) => void;

@@ -12,7 +12,7 @@ export const container = new Container();
 
 container
   .bind<AppConfig>(appConfigSymbol)
-  .toConstantValue(getAppConfigStatic());
+  .toDynamicValue(() => getAppConfigStatic());
 container.bind<ConfigService>(ConfigService).toSelf().inSingletonScope();
 container.bind<AuthService>(AuthService).toSelf().inSingletonScope();
 container

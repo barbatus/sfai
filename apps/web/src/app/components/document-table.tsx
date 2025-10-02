@@ -27,7 +27,7 @@ import {
 import { Button } from '@/components/common/button';
 import { toast } from '@/components/common/toaster';
 import { DataTable } from '@/components/data-table';
-import { getErrorMessage } from '@/utils';
+import { getErrorMessage } from '@/lib/error';
 
 interface DocumentRow {
   filename: string;
