@@ -28,6 +28,7 @@ import { Button } from '@/components/common/button';
 import { toast } from '@/components/common/toaster';
 import { DataTable } from '@/components/data-table';
 import { Space } from '@/components/space';
+import { getErrorMessage } from '@/utils';
 
 interface DocumentRow {
   filename: string;
@@ -57,19 +58,16 @@ const getFileIcon = (extension: string) => {
       return <FileSpreadsheet className={`${iconClass} text-green-500`} />;
     case 'pptx':
     case 'ppt':
-      return <FileText className={`${iconClass} text-orange-500`} />;
-    case 'jpg':
-    case 'jpeg':
-    case 'png':
-    case 'gif':
-      return <FileImage className={`${iconClass} text-purple-500`} />;
+      return <FileImage className={`${iconClass} text-orange-500`} />;
+    case 'txt':
+      return <FileText className={`${iconClass} text-gray-500`} />;
     case 'json':
     case 'xml':
     case 'html':
-      return <FileCode className={`${iconClass} text-cyan-500`} />;
-    case 'txt':
-      return <FileText className={`${iconClass} text-gray-500`} />;
+      return <FileCode className={`${iconClass} text-purple-500`} />;
     case 'zip':
+    case 'rar':
+    case '7z':
       return <File className={`${iconClass} text-yellow-500`} />;
     default:
       return <File className={`${iconClass} text-gray-400`} />;
@@ -77,47 +75,44 @@ const getFileIcon = (extension: string) => {
 };
 
 export function DocumentTable({ documents, isLoading, onDeleteSuccess }: DocumentTableProps) {
-  const [deletingFile, setDeletingFile] = useState<string | null>(null);
-  const deleteMutation = useDeleteDocument();
+  const [deletingFilename, setDeletingFilename] = useState<string | null>(null);
+  const deleteDocumentMutation = useDeleteDocument();
 
   const handleDelete = async (filename: string) => {
-    setDeletingFile(filename);
-    deleteMutation.mutate(
-      { body: { filename } },
+    setDeletingFilename(filename);
+
+    deleteDocumentMutation.mutate(
       {
-        onSuccess: (response) => {
-          if (response.status === 200) {
-            toast({
-              title: 'Success',
-              description: `${filename} deleted successfully`,
-            });
-            onDeleteSuccess(filename);
-          } else {
-            const errorBody = response.body as { message?: string };
-            toast({
-              title: 'Error',
-              description: errorBody.message || 'Failed to delete document',
-              variant: 'destructive',
-            });
-          }
-          setDeletingFile(null);
+        body: {
+          filename,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Success',
+            description: `${filename} deleted successfully`,
+          });
+          onDeleteSuccess(filename);
+          setDeletingFilename(null);
         },
         onError: (error) => {
           toast({
             title: 'Error',
-            description: error instanceof Error ? error.message : 'Failed to delete document',
+            description: getErrorMessage(error, `Failed to delete ${filename}`),
             variant: 'destructive',
           });
-          setDeletingFile(null);
+          setDeletingFilename(null);
         },
       },
     );
   };
 
-  // Transform document names to table data
-  const data: DocumentRow[] = documents.map((filename) => {
+  // Transform documents to rows with extension
+  const rows: DocumentRow[] = documents.map((filename) => {
     const lastDotIndex = filename.lastIndexOf('.');
-    const extension = lastDotIndex > -1 ? filename.substring(lastDotIndex + 1) : '';
+    const extension = lastDotIndex > -1 ? filename.slice(lastDotIndex + 1) : '';
+
     return {
       filename,
       extension,
@@ -126,41 +121,42 @@ export function DocumentTable({ documents, isLoading, onDeleteSuccess }: Documen
 
   const columns: ColumnDef<DocumentRow>[] = [
     {
-      accessorKey: 'icon',
+      id: 'icon',
       header: '',
-      cell: ({ row }) => getFileIcon(row.original.extension),
-      size: 50,
+      cell: ({ row }) => {
+        return <div className="w-8">{getFileIcon(row.original.extension)}</div>;
+      },
+      size: 40,
       enableSorting: false,
+      enableColumnFilter: false,
     },
     {
       accessorKey: 'filename',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Filename
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ getValue }) => <span className="font-medium">{getValue() as string}</span>,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="hover:bg-transparent p-0 font-semibold"
+          >
+            Filename
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        return <div className="font-medium">{row.original.filename}</div>;
+      },
     },
     {
       accessorKey: 'extension',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Type
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ getValue }) => {
-        const ext = getValue() as string;
-        return <span className="uppercase text-xs font-mono">{ext || 'UNKNOWN'}</span>;
+      header: 'Type',
+      cell: ({ row }) => {
+        return (
+          <div className="uppercase text-sm text-muted-foreground">
+            {row.original.extension || 'Unknown'}
+          </div>
+        );
       },
       size: 100,
     },
@@ -169,17 +165,18 @@ export function DocumentTable({ documents, isLoading, onDeleteSuccess }: Documen
       header: 'Actions',
       cell: ({ row }) => {
         const filename = row.original.filename;
-        const isDeleting = deletingFile === filename;
+        const isDeleting = deletingFilename === filename;
 
         return (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={isDeleting}>
-                {isDeleting ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
-                ) : (
-                  <Trash2 className="h-4 w-4" />
-                )}
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isDeleting}
+                className="hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -192,35 +189,33 @@ export function DocumentTable({ documents, isLoading, onDeleteSuccess }: Documen
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => handleDelete(filename)}>Delete</AlertDialogAction>
+                <AlertDialogAction
+                  onClick={() => handleDelete(filename)}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         );
       },
-      size: 100,
+      size: 80,
       enableSorting: false,
+      enableColumnFilter: false,
     },
   ];
 
-  const emptyMessage = (
-    <Space size={2}>
-      <FileText className="h-12 w-12 text-muted-foreground mx-auto" />
-      <h3 className="text-lg font-semibold">No documents uploaded</h3>
-      <p className="text-sm text-muted-foreground">Upload your first document to get started</p>
-    </Space>
-  );
-
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      loading={isLoading}
-      emptyMessage={emptyMessage}
-      pageSize={10}
-      showPagination={true}
-      showRowCount={true}
-      initialSorting={[{ id: 'filename', desc: false }]}
-    />
+    <Space size={4}>
+      <DataTable
+        columns={columns}
+        data={rows}
+        loading={isLoading}
+        emptyMessage="No documents uploaded yet"
+        showPagination={documents.length > 10}
+        pageSize={10}
+      />
+    </Space>
   );
 }

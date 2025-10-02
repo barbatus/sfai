@@ -46,7 +46,11 @@ export default function AdminPage() {
       { body: {} },
       {
         onSuccess: () => {
-          router.push('/');
+          router.push('/login');
+          toast({
+            title: 'Success',
+            description: 'Logged out successfully',
+          });
         },
         onError: (error) => {
           toast({
@@ -89,9 +93,9 @@ export default function AdminPage() {
       <header className="border-b-2 border-foreground">
         <div className="container mx-auto px-4 py-4">
           <Box align="center" justify="between">
-            <Box align="center" gap={3}>
-              <FileText className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">SFAI Admin Panel</h1>
+            <Box align="center" gap={2}>
+              <FileText className="h-6 w-6" />
+              <h1 className="text-xl font-bold">SFAI Admin Panel</h1>
             </Box>
             <Button
               variant="outline"

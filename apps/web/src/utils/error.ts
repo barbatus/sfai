@@ -4,6 +4,7 @@ export function getErrorMessage(
 ): string {
   if (
     typeof response === 'object' &&
+    response !== null &&
     'error' in response &&
     typeof (response as { error: string }).error === 'string'
   ) {

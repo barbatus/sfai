@@ -20,14 +20,29 @@ export const useDocuments = () => {
 
   const result = documentsApi.list.useQuery({
     queryKey: ['documents'],
-    select: (d) => d.body,
   });
 
   const addDocument = useCallback(
     (filename: string) => {
-      queryClient.setQueryData<string[]>(['documents'], (oldData) => {
-        if (!oldData) return [filename];
-        return [filename, ...oldData];
+      queryClient.setQueryData(['documents'], (oldData: any) => {
+        if (!oldData) {
+          return {
+            status: 200,
+            body: [filename],
+            headers: {},
+          };
+        }
+
+        const currentDocs = Array.isArray(oldData.body) ? oldData.body : [];
+
+        if (currentDocs.includes(filename)) {
+          return oldData;
+        }
+
+        return {
+          ...oldData,
+          body: [filename, ...currentDocs],
+        };
       });
     },
     [queryClient],
@@ -35,16 +50,25 @@ export const useDocuments = () => {
 
   const removeDocument = useCallback(
     (filename: string) => {
-      queryClient.setQueryData<string[]>(['documents'], (oldData) => {
-        if (!oldData) return [];
-        return oldData.filter((doc) => doc !== filename);
+      queryClient.setQueryData(['documents'], (oldData: any) => {
+        if (!oldData) return oldData;
+
+        const currentDocs = Array.isArray(oldData.body) ? oldData.body : [];
+
+        return {
+          ...oldData,
+          body: currentDocs.filter((doc: string) => doc !== filename),
+        };
       });
     },
     [queryClient],
   );
 
+  const documents = result.data?.body || [];
+
   return {
     ...result,
+    data: Array.isArray(documents) ? documents : [],
     addDocument,
     removeDocument,
   };
