@@ -80,7 +80,7 @@ export const useDeleteDocument = () => {
 
 export const uploadDocumentWithProgress = (
   formData: FormData,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
 ): Promise<{ status: number; body: any }> => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -103,7 +103,11 @@ export const uploadDocumentWithProgress = (
       } else {
         try {
           const errorData = JSON.parse(xhr.responseText);
-          reject(new Error(errorData.message || errorData.error || `Upload failed with status ${xhr.status}`));
+          reject(
+            new Error(
+              errorData.message || errorData.error || `Upload failed with status ${xhr.status}`,
+            ),
+          );
         } catch {
           reject(new Error(`Upload failed with status ${xhr.status}`));
         }
@@ -123,14 +127,12 @@ export const uploadDocumentWithProgress = (
   });
 };
 
-export const useUploadDocumentWithProgress = (
-  onProgress?: (progress: number) => void
-) => {
+export const useUploadDocumentWithProgress = (onProgress?: (progress: number) => void) => {
   const uploadWithProgress = useCallback(
     async (formData: FormData): Promise<any> => {
       return uploadDocumentWithProgress(formData, onProgress);
     },
-    [onProgress]
+    [onProgress],
   );
 
   return uploadWithProgress;

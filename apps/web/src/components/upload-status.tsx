@@ -149,7 +149,9 @@ export function UploadStatus({ uploadStates, onRetry, onClear }: UploadStatusPro
                         <span className="text-xs text-muted-foreground animate-pulse">
                           {state.progress === 100 ? 'Processing...' : 'Uploading...'}
                         </span>
-                        <span className="text-xs font-semibold text-primary">{state.progress}%</span>
+                        <span className="text-xs font-semibold text-primary">
+                          {state.progress}%
+                        </span>
                       </div>
                       <Progress value={state.progress} className="h-2.5" />
                     </div>

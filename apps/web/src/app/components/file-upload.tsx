@@ -47,18 +47,15 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
       );
 
       try {
-        const response = await uploadDocumentWithProgress(
-          formData,
-          (percentComplete) => {
-            setUploadStates((prev) =>
-              prev.map((state) =>
-                state.id === uploadState.id
-                  ? { ...state, status: 'uploading' as const, progress: percentComplete }
-                  : state,
-              ),
-            );
-          }
-        );
+        const response = await uploadDocumentWithProgress(formData, (percentComplete) => {
+          setUploadStates((prev) =>
+            prev.map((state) =>
+              state.id === uploadState.id
+                ? { ...state, status: 'uploading' as const, progress: percentComplete }
+                : state,
+            ),
+          );
+        });
 
         if (response.status === 200 && response.body) {
           const body = response.body;
