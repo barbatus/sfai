@@ -160,11 +160,11 @@ export function UploadStatus({ uploadStates, onRetry, onClear }: UploadStatusPro
                   {state.status === 'success' && state.response && (
                     <Space size={1} className="text-xs text-muted-foreground mt-2">
                       <Box justify="between">
-                        <span>Chunks:</span>
+                        <span>Chunks Created:</span>
                         <span className="font-mono">{state.response.chunks_created}</span>
                       </Box>
                       <Box justify="between">
-                        <span>Time:</span>
+                        <span>Processing Time:</span>
                         <span className="font-mono">
                           {state.response.processing_time.toFixed(2)}s
                         </span>

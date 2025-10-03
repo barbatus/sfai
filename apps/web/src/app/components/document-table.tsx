@@ -111,7 +111,7 @@ export function DocumentTable({ documents, isLoading, onDeleteSuccess }: Documen
           toast({
             title: 'Document Deleted',
             description: `${selectedFilename} has been successfully deleted`,
-            duration: 10000, // 10 seconds
+            duration: 5000, // 5 seconds
           });
           onDeleteSuccess(selectedFilename);
           setDeletingFilename(null);
