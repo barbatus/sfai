@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import type { DeleteResponse, Document, UploadResponse } from "ts-rest";
 
 import { ConfigService } from "./config";
+import { fetchWithRetry } from "./lib/fetch-retry";
 import { SupabaseAuthService } from "./supabase-auth.service";
 import {
   BadRequestError,
@@ -92,7 +93,7 @@ export class DocumentsService {
     formData.append("file", file as Blob);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithRetry(
         `${config.ragApiUrl}/automotive/upload-document`,
         {
           method: "POST",
@@ -113,21 +114,23 @@ export class DocumentsService {
         if (response.status === 413) {
           throw new FileTooLargeError("File too large");
         }
-        throw new InternalServerError(
-          `API responded with status ${response.status}`,
-        );
+
+        throw new InternalServerError("Failed to process document");
       }
 
-      return (await response.json()) as UploadResponse;
+      const result = (await response.json()) as UploadResponse;
+      return result;
     } catch (error) {
       if (
         error instanceof UnauthorizedError ||
         error instanceof BadRequestError ||
-        error instanceof FileTooLargeError
+        error instanceof FileTooLargeError ||
+        error instanceof InternalServerError
       ) {
         throw error;
       }
-      throw new InternalServerError("Failed to upload document");
+
+      throw new InternalServerError("Failed to process document");
     }
   }
 
