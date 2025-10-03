@@ -78,6 +78,65 @@ export const useDeleteDocument = () => {
   return documentsApi.delete.useMutation();
 };
 
+export const uploadDocumentWithProgress = (
+  formData: FormData,
+  onProgress?: (progress: number) => void
+): Promise<{ status: number; body: any }> => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable && onProgress) {
+        const percentComplete = Math.round((e.loaded / e.total) * 100);
+        onProgress(percentComplete);
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          resolve({ status: xhr.status, body: response });
+        } catch (error) {
+          reject(new Error('Failed to parse response'));
+        }
+      } else {
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          reject(new Error(errorData.message || errorData.error || `Upload failed with status ${xhr.status}`));
+        } catch {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      }
+    });
+
+    xhr.addEventListener('error', () => {
+      reject(new Error('Network error during upload'));
+    });
+
+    xhr.addEventListener('abort', () => {
+      reject(new Error('Upload cancelled'));
+    });
+
+    xhr.open('POST', '/api/v1/documents/upload');
+    xhr.send(formData);
+  });
+};
+
+export const useUploadDocumentWithProgress = (
+  onProgress?: (progress: number) => void
+) => {
+  const uploadWithProgress = useCallback(
+    async (formData: FormData): Promise<any> => {
+      return uploadDocumentWithProgress(formData, onProgress);
+    },
+    [onProgress]
+  );
+
+  return uploadWithProgress;
+};
+
+// Keep the old one for compatibility
 export const useUploadDocument = () => {
   return documentsUploadApi.upload.useMutation();
 };

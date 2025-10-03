@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, Upload } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { useUploadDocument } from '@/api/documents';
+import { uploadDocumentWithProgress } from '@/api/documents';
 import { Box } from '@/components/box';
 import { Button } from '@/components/common/button';
 import {
@@ -27,7 +27,6 @@ const MAX_PARALLEL_UPLOADS = 10;
 export function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [uploadStates, setUploadStates] = useState<FileUploadState[]>([]);
-  const uploadMutation = useUploadDocument();
 
   const uploadQueueRef = useRef<FileUploadState[]>([]);
   const activeUploadsRef = useRef(0);
@@ -38,17 +37,28 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
       const formData = new FormData();
       formData.append('file', uploadState.file);
 
-      // Mark as uploading
+      // Mark as uploading with initial progress
       setUploadStates((prev) =>
         prev.map((state) =>
           state.id === uploadState.id
-            ? { ...state, status: 'uploading' as const, progress: 50 }
+            ? { ...state, status: 'uploading' as const, progress: 0 }
             : state,
         ),
       );
 
       try {
-        const response = await uploadMutation.mutateAsync({ body: formData });
+        const response = await uploadDocumentWithProgress(
+          formData,
+          (percentComplete) => {
+            setUploadStates((prev) =>
+              prev.map((state) =>
+                state.id === uploadState.id
+                  ? { ...state, status: 'uploading' as const, progress: percentComplete }
+                  : state,
+              ),
+            );
+          }
+        );
 
         if (response.status === 200 && response.body) {
           const body = response.body;
@@ -112,7 +122,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
         }
       }
     },
-    [uploadMutation, onUploadSuccess],
+    [onUploadSuccess],
   );
 
   const processUploadQueue = useCallback(async () => {
@@ -248,7 +258,7 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
                 <div>
                   <p className="font-medium mb-1">Drag & drop files here, or click to select</p>
                   <p className="text-xs text-muted-foreground">
-                    PDF, DOCX, XLSX, PPTX, TXT, CSV, JSON, HTML, XML, ZIP • Max 50MB • No images
+                    PDF, DOCX, XLSX, PPTX, TXT, CSV, JSON, HTML, XML, ZIP • Max 50MB
                   </p>
                 </div>
               )}

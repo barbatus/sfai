@@ -47,11 +47,14 @@ export function UploadStatus({ uploadStates, onRetry, onClear }: UploadStatusPro
     (s) => s.status === 'success' || s.status === 'error',
   ).length;
 
-  const getStatusIcon = useCallback((status: FileUploadState['status']) => {
+  const getStatusIcon = useCallback((status: FileUploadState['status'], progress?: number) => {
     switch (status) {
       case 'waiting':
         return <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />;
       case 'uploading':
+        if (progress === 100) {
+          return <CheckCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />;
+        }
         return (
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary flex-shrink-0" />
         );
@@ -113,9 +116,13 @@ export function UploadStatus({ uploadStates, onRetry, onClear }: UploadStatusPro
                 >
                   <Box align="start" justify="between" className="w-full">
                     <Box align="start" gap={2} className="flex-1 min-w-0">
-                      {getStatusIcon(state.status)}
+                      {getStatusIcon(state.status, state.progress)}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium break-all">{state.file.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {(state.file.size / 1024 / 1024).toFixed(2)} MB
+                          {state.status === 'waiting' && ' • Waiting in queue...'}
+                        </p>
                         {state.error && (
                           <p className="text-xs text-red-600 mt-1 break-words">{state.error}</p>
                         )}
@@ -137,7 +144,15 @@ export function UploadStatus({ uploadStates, onRetry, onClear }: UploadStatusPro
                   </Box>
 
                   {state.status === 'uploading' && (
-                    <Progress value={state.progress} className="h-1.5 mt-2" />
+                    <div className="mt-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-muted-foreground animate-pulse">
+                          {state.progress === 100 ? 'Processing...' : 'Uploading...'}
+                        </span>
+                        <span className="text-xs font-semibold text-primary">{state.progress}%</span>
+                      </div>
+                      <Progress value={state.progress} className="h-2.5" />
+                    </div>
                   )}
 
                   {state.status === 'success' && state.response && (
