@@ -40,7 +40,7 @@ export default function LoginPage() {
       {
         onSuccess: async (response) => {
           if (response.status === 200) {
-            router.push('/admin');
+            window.location.href = '/admin';
           } else {
             setErrorMessage(getErrorMessage(response.body, 'Invalid credentials'));
           }
